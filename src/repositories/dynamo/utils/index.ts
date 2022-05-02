@@ -1,0 +1,5 @@
+export { createExpressionAttributeNames } from 'repositories/dynamo/utils/createExpressionAttributeNames'
+export { createExpressionAttributeValues } from 'repositories/dynamo/utils/createExpressionAttributeValues'
+export { createFilterExpression } from 'repositories/dynamo/utils/createFilterExpression'
+export { createReadExpression } from 'repositories/dynamo/utils/createReadExpression'
+export { createUpdateExpression } from 'repositories/dynamo/utils/createUpdateExpression'

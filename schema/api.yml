@@ -1,0 +1,189 @@
+openapi: 3.0.0
+info:
+  title: Gitlab MR Bot API
+  description: CRUD Bots and Webhook Notify API
+  version: 0.1.0
+
+paths:
+  /bot:
+     post:
+      tags:
+        - bot
+      summary: Create new bot.
+      description: Returns an created bot id.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBotRequest'
+      responses:
+        '201':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateBotResponse'
+
+  /bot/{botId}:
+    get:
+      tags:
+        - bot
+      summary: Get bot settings.
+      description: Returns Bot settings excepting token.
+      parameters:
+        - name: botId
+          in: path
+          description: Bot id.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBotResponse'
+
+    put:
+      tags:
+        - bot
+      summary: Update bot settings.
+      description: Returns an updated bot id.
+      parameters:
+        - name: botId
+          in: path
+          description: Bot id.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBotRequest'
+      responses:
+        '201':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateBotResponse'
+
+    delete:
+      tags:
+        - bot
+      summary: Delete bot.
+      description: Returns an deleted bot id.
+      parameters:
+        - name: botId
+          in: path
+          description: Bot id.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteBotResponse'
+
+  /webhook/{botId}:
+    post: 
+      tags:
+        - webhook
+      summary: Update bot settings.
+      description: Returns an updated bot id.
+      responses:
+        '200':
+          description: "Success"
+          
+
+components:
+  schemas:
+    BotType:
+      type: string
+      enum:
+        - default
+        - custom
+
+    Bot:
+      type: object
+      required:
+        - notificationTo
+        - name
+        - type
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+        notificationTo:
+          type: string
+          format: URL
+        createdAt:
+          type: number
+          format: UNIX Timestamp(ms)
+          readOnly: true
+        type:
+          $ref: '#/components/schemas/BotType'
+        title:
+          type: string
+        message:
+          type: string
+        commitListTitle:
+          type: string
+
+    GetBotResponse:
+      type: object
+      required:
+        - result
+      properties:
+        result:
+          $ref: '#/components/schemas/Bot'
+
+    CreateBotRequest:
+      type: object
+      required:
+        - hoge
+      $ref: '#/components/schemas/Bot'
+    
+    CreateBotResponse:
+      type: object
+      required:
+        - result
+      properties:
+        result:
+          type: object
+          properties: 
+            id: 
+              type: string
+
+    UpdateBotRequest:
+      type: object
+      $ref: '#/components/schemas/Bot'
+
+    UpdateBotResponse:
+      type: object
+      required:
+        - result
+      properties:
+        result:
+          type: object
+          properties: 
+            id: 
+              type: string
+
+    DeleteBotResponse:
+      type: object
+      required:
+        - result
+      properties:
+        result:
+          type: object
+          properties: 
+            id: 
+              type: string

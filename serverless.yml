@@ -1,0 +1,62 @@
+org: akaneburyo
+app: gitlab-mr-bot
+stage: dev
+region: us-east-1
+
+botsTable:
+  component: '@serverless/aws-dynamodb'
+  inputs:
+    name: ${app}-bots-${stage}
+    region: ${region}
+    attributeDefinitions:
+      - AttributeName: id
+        AttributeType: S
+    keySchema:
+      - AttributeName: id
+        KeyType: HASH
+
+iam:
+  component: '@serverless/aws-iam-role'
+  inputs:
+    name: TableAccessRole
+    service:
+      - lambda.amazonaws.com
+      - edgelambda.amazonaws.com
+    policy:
+      {
+        'Version': '2012-10-17',
+        'Statement':
+          [
+            { 'Effect': 'Allow', 'Action': ['sts:AssumeRole'], 'Resource': '*' },
+            {
+              'Effect': 'Allow',
+              'Action': ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+              'Resource': '*',
+            },
+            {
+              'Effect': 'Allow',
+              'Action':
+                [
+                  'dynamodb:Query',
+                  'dynamodb:Scan',
+                  'dynamodb:GetItem',
+                  'dynamodb:PutItem',
+                  'dynamodb:UpdateItem',
+                  'dynamodb:DeleteItem',
+                ],
+              'Resource': '${botsTable.arn}',
+            },
+          ],
+      }
+
+awsNextApp:
+  component: '@sls-next/serverless-component'
+  inputs:
+    bucketName: '${org}-${app}-${stage}'
+    region: ${region}
+    roleArn: ${iam.arn}
+    build:
+      env:
+        BOTS_TABLE_NAME: ${botsTable.name}
+        NEXT_PUBLIC_REGION: ${region}
+        NEXT_PUBLIC_PROTOCOL: https
