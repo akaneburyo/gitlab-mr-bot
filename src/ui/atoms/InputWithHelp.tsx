@@ -25,7 +25,13 @@ export const InputWithHelp = <T extends FieldValues>(props: Props<T>) => {
   } = useController<T>({ name, control, rules })
 
   return (
-    <FormControl id={`input_${name}`} isInvalid={!!error} {...rest} {...space}>
+    <FormControl
+      id={`input_${name}`}
+      isInvalid={!!error}
+      {...rest}
+      {...space}
+      defaultValue={defaultValue || control?._defaultValues[name]}
+    >
       <InputGroup>
         <Input
           type="text"
@@ -33,9 +39,9 @@ export const InputWithHelp = <T extends FieldValues>(props: Props<T>) => {
           ref={ref}
           placeholder={placeholder}
           {...layout}
-          defaultValue={defaultValue || control?._defaultValues[name]}
           isDisabled={isDisabled}
           _disabled={{ color: 'gray.400' }}
+          value={rest.value}
         />
         <InputRightElement>
           <Tooltip hasArrow bg="teal.500" label={information}>
