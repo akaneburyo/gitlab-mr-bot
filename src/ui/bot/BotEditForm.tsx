@@ -3,9 +3,9 @@ import { useCallback, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 // Chakra-UI
-import { HStack, Box } from '@chakra-ui/react'
-import { Heading, Button } from '@chakra-ui/react'
+import { HStack, Box, Heading, Button } from '@chakra-ui/react'
 import { ModalHeader, ModalBody, ModalFooter } from '@chakra-ui/react'
+import { useToast } from '@chakra-ui/react'
 
 // Components
 import { InputWithHelp } from 'ui/atoms/InputWithHelp'
@@ -31,6 +31,8 @@ export type Props = {
 export const BotEditForm: VFC<Props> = (props) => {
   const { onCheck, onSave, onDelete } = props
 
+  const toast = useToast()
+
   const {
     control: idFormControl,
     handleSubmit: idFormHandle,
@@ -53,21 +55,12 @@ export const BotEditForm: VFC<Props> = (props) => {
         .then((bot) => {
           setEditing(bot)
         })
+        .catch((e) => toast({ title: 'Error.', description: `${e}`, status: 'error' }))
         .finally(() => {
           setChecking(false)
         })
     },
-    [onCheck]
-  )
-
-  const onSaveNotify = useCallback(
-    async (values: BotFormValues) => {
-      await onSave(values, editing?.id || '').then(() => {
-        setEditing(undefined)
-        idFormReset({ id: '' })
-      })
-    },
-    [onSave, idFormReset, editing]
+    [onCheck, toast]
   )
 
   const onCancel = useCallback(() => {
@@ -75,13 +68,25 @@ export const BotEditForm: VFC<Props> = (props) => {
     idFormReset({ id: '' })
   }, [idFormReset])
 
+  const onSaveNotify = useCallback(
+    async (values: BotFormValues) => {
+      await onSave(values, editing?.id || '')
+        .then(onCancel)
+        .catch((e) => toast({ title: 'Error.', description: `${e}`, status: 'error' }))
+    },
+    [onSave, onCancel, editing, toast]
+  )
+
   const onDeleteNotify = useCallback(() => {
     if (!editing || !editing.id) return
     setDeleting(true)
     onDelete(editing.id)
-      .then(() => deleteConfirmModalClose())
+      .then(() => {
+        deleteConfirmModalClose()
+        onCancel()
+      })
       .finally(() => setDeleting(false))
-  }, [editing, onDelete, deleteConfirmModalClose])
+  }, [editing, onDelete, onCancel, deleteConfirmModalClose])
 
   return (
     <Box>
