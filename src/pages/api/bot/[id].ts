@@ -26,8 +26,6 @@ const doUpdateBot = async (params: ApiParams<UpdateBotResponse>) => {
 
   const body: UpdateBotRequest = isObject(req.body) ? req.body : JSON.parse(req.body)
   if (!id || !body) throw Error('ValidationError')
-
-  console.log(body)
   await botUpdate(defaultDataProvider, { ...body, id: `${id}` })
   res.status(201).json({ result: { id: `${id}` } })
 }
