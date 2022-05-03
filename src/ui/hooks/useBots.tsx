@@ -36,7 +36,7 @@ const useBots = () => {
   )
 
   const getInfo = useCallback(
-    (id: string) => {
+    async (id: string) => {
       return apiClient.bot
         ._botId(id)
         .$get()
@@ -46,7 +46,7 @@ const useBots = () => {
   )
 
   const deleteBot = useCallback(
-    (id: string) => {
+    async (id: string) => {
       return apiClient.bot
         ._botId(id)
         .$delete()

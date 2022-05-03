@@ -3,8 +3,8 @@ import { useCallback, useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
 // Chakra-UI
-import { HStack, VStack } from '@chakra-ui/react'
-import { Heading, Button } from '@chakra-ui/react'
+import { HStack, VStack, Heading, Button } from '@chakra-ui/react'
+import { useToast } from '@chakra-ui/react'
 
 // Components
 import { InputWithHelp } from 'ui/atoms/InputWithHelp'
@@ -44,6 +44,7 @@ export const BotForm: VFC<Props> = (props) => {
     defaultValue,
   } = option || {}
 
+  const toast = useToast()
   const [submiting, setSubmiting] = useState<boolean>(false)
   const {
     control,
@@ -57,9 +58,10 @@ export const BotForm: VFC<Props> = (props) => {
       setSubmiting(true)
       onSubmit(values)
         .then(() => reset({ name: '', notificationTo: '' }))
+        .catch((e) => toast({ title: 'Error.', description: `${e}`, status: 'error' }))
         .finally(() => setSubmiting(false))
     },
-    [onSubmit, reset]
+    [onSubmit, reset, toast]
   )
 
   useEffect(() => {

@@ -46,7 +46,7 @@ const Index: NextPage<Props> = ({ baseUrl }) => {
 
   const onCheck = useCallback(
     async (id) => {
-      if (!(await checkExist(id))) throw Error()
+      if (!(await checkExist(id))) throw new Error('Not found.')
       return await getInfo(id)
     },
     [checkExist, getInfo]
